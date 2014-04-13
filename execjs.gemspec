@@ -11,8 +11,9 @@ Gem::Specification.new do |s|
 
   s.files = Dir["README.md", "LICENSE", "lib/**/*"]
 
-  s.add_dependency "multi_json", "~>1.0"
   s.add_development_dependency "rake"
+
+  s.licenses = ['MIT']
 
   s.authors = ["Sam Stephenson", "Josh Peek"]
   s.email   = ["sstephenson@gmail.com", "josh@joshpeek.com"]

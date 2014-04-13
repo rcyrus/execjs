@@ -16,7 +16,7 @@ module ExecJS
         source = encode(source)
 
         if /\S/ =~ source
-          exec("return eval(#{JSON.encode("(#{source})")})")
+          exec("return eval(#{::JSON.generate("(#{source})", :quirks_mode => true)})")
         end
       end
 
@@ -30,7 +30,7 @@ module ExecJS
       end
 
       def call(identifier, *args)
-        eval "#{identifier}.apply(this, #{JSON.encode(args)})"
+        eval "#{identifier}.apply(this, #{::JSON.generate(args)})"
       end
 
       protected
@@ -50,7 +50,7 @@ module ExecJS
             end
             output.sub!('#{encoded_source}') do
               encoded_source = encode_unicode_codepoints(source)
-              JSON.encode("(function(){ #{encoded_source} })()")
+              ::JSON.generate("(function(){ #{encoded_source} })()", :quirks_mode => true)
             end
             output.sub!('#{json2_source}') do
               IO.read(ExecJS.root + "/support/json2.js")
@@ -59,7 +59,7 @@ module ExecJS
         end
 
         def extract_result(output)
-          status, value = output.empty? ? [] : JSON.decode(output)
+          status, value = output.empty? ? [] : ::JSON.parse(output, :create_additions => false)
           if status == "ok"
             value
           elsif value =~ /SyntaxError:/
@@ -100,7 +100,7 @@ module ExecJS
     end
 
     def available?
-      require "execjs/json"
+      require 'json'
       binary ? true : false
     end
 
